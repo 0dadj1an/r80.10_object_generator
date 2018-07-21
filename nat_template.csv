@@ -1,0 +1,6 @@
+name,nat-settings,auto-rule,method,hide-behind,ip-address,install-on
+net_10.10.0.0_16,true,true,hide,gateway,,ALL
+net_10.20.210.0_24,true,true,static,,192.0.2.1,ALL
+net_10.30.23.0_24,true,true,hide,,200.0.2.1,ALL
+net_10.40.22.0_24,false,,,,,
+net_10.50.20.0_24,false,,,,,
