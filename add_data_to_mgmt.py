@@ -107,7 +107,7 @@ class Connector(object):
              
              if self.response.status_code == 200:
                  sid_out=json.loads(self.response.text)
-                 #print sid_out
+                 print sid_out
                  self.sid = sid_out['sid']
                  self.headers = {
                         'content-type': "application/json",
@@ -128,23 +128,18 @@ class Connector(object):
 
     def logout(self):
         # avoid connectovity interruption - thats why try except here
-        done=False
-        while not done:
             try:
                 payload_list={}
                 self.response = requests.post(self.url+"logout", json=payload_list, headers=self.headers, verify=False)
+                print self.response.json()
                 return self.response
             except:
-                print "connection to mgmt server broken, trying again"
-            else:
-                done=True
+                print "connection to mgmt server broken, trying again from logout method"
     
         
 
     def publish(self):
         # avoid connectovity interruption - thats why try except here
-        done=False
-        while not done:
             try:
                 payload_list={}
             
@@ -171,13 +166,12 @@ class Connector(object):
                 return self.response
 
             except:
-                print "connection to mgmt server broken, trying again"
-            else:
-                done=True
+                print "connection to mgmt server broken, trying again from publish method"
+            
         
 
 
-    def send_cmd(self, cmd, payload ):
+    def send_cmd(self, cmd, payload):
         # avoid connectovity interruption - thats why try except here
         done=False
         while not done:
@@ -364,7 +358,26 @@ class Push_Data(object):
 
 
     def add_host(self):
-        pass
+        
+        """
+        Method which setting up NAT settings for particualr networks 
+        """
+        for item in self.host_list:
+            payload = {} # common payload
+            payload ['name'] = item['name'] # add name to common payload to check if object exists
+            if self.connect.check_object('show-host', payload) == True:
+
+                print "Host already exists:" + item['name']
+                continue
+            else:
+                payload ['ip-address'] = item['ip-address']
+                payload ['comments'] = item['comments']
+                payload ['tags'] = item['tag']
+                # pokud objek neexistuje pridej ho
+                self.connect.send_cmd('add-host', payload)
+                print "Added host:" + item['name']
+
+
 
 
 ##################################################
@@ -388,7 +401,7 @@ def main():
 
     # load parameters from user
     argParser = argparse.ArgumentParser(description='CP Mgmt data load script, in parameter -m specify which metod you want to load --> for example -m add_tags, if you want to load all data, specify parameter -m ALL')
-    argParser.add_argument("-m", dest="method", help=('add_tags, add_group, add_network, set_auto_nat_for_net, set_group_for_net,add_host, ALL'), required=True)
+    argParser.add_argument("-m", dest="method", help=('add_tags, add_group, add_network, set_auto_nat_for_net, set_group_for_net,add_hosts, ALL'), required=True)
     args = argParser.parse_args()
     print "running method:" + " " + args.method
   
@@ -404,6 +417,7 @@ def main():
                 nat = CSV_Importer_to_List('nat_template.csv') # load nat csv and convert it to list of dictionaries
                 net_to_group = CSV_Importer_to_List('net_to_group.csv') # load nat csv and convert it to list of dictionaries
                 host = CSV_Importer_to_List('host.csv')# load hosts csv and convert it to list of dictionaries
+
                
                 # connect to mgmt
                 try:
@@ -417,9 +431,10 @@ def main():
                         push_data.add_network() #push networks
                         push_data.set_auto_nat_for_net() # set NAT
                         push_data.set_group_for_net() # set nets to group
+                        push_data.add_host()# add hosts
 
 
-                    elif args.method == "add_tag":
+                    elif args.method == "add_tags":
                         print "Running tags"
                         push_data.add_tag() # push tags
                     elif args.method == "add_group":
@@ -432,12 +447,15 @@ def main():
                         push_data.set_group_for_net() # set nets to group
                     elif args.method == "set_auto_nat_for_net":
                         push_data.set_group_for_net() # set nets to group
+                    elif args.method == "add_hosts":
+                        push_data.add_host() # set nets to group
 
 
                     else:
                         print "Nothing was added, have you specified right method???"
                         connect.publish() # publish changes
                         connect.logout() # logout
+                        sys.exit(1)
                     
                     connect.publish() # publish changes
                     connect.logout() # logout
