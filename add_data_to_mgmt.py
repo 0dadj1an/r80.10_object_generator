@@ -133,7 +133,8 @@ class Connector(object):
             try:
                 payload_list={}
                 self.response = requests.post(self.url+"logout", json=payload_list, headers=self.headers, verify=False)
-                print self.response.json()
+                #print self.response.json()
+                print "Logout OK"
                 return self.response
             except:
                 print "connection to mgmt server broken, trying again from logout method"
@@ -160,7 +161,7 @@ class Connector(object):
                 show_task_text = json.loads(show_task.text)
                 #print show_task_text
                 
-                print json.loads(show_task.text)
+                #print json.loads(show_task.text)
                 
                 while show_task_text['tasks'][0]['status'] == "in progress":
                     print " publish status = ", show_task_text['tasks'][0]['progress-percentage']
@@ -169,6 +170,7 @@ class Connector(object):
                     show_task_text=json.loads(show_task.text)
                     print " publish status = ", show_task_text['tasks'][0]['progress-percentage'] , show_task_text['tasks'][0]['status']
                 
+                print "Publish OK"
                 return self.response
 
             except:

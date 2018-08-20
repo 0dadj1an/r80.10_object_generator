@@ -1,27 +1,8 @@
-2018-08-20 14:57:05 - starting script......
-{u'last-login-was-at': {u'posix': 1534769776823L, u'iso-8601': u'2018-08-20T14:56+0200'}, u'uid': u'94ec4af4-ea29-4013-9363-1c71dd23ed87', u'url': u'https://10.120.1.111:443/web_api', u'session-timeout': 600, u'sid': u'yNJs4LHxd2kLfqTYJZzb8YAJwvH8k9FjSXUMbTo6b2A', u'api-server-version': u'1.1'}
+2018-08-20 15:08:21 - starting script......
+{u'last-login-was-at': {u'posix': 1534770503230L, u'iso-8601': u'2018-08-20T15:08+0200'}, u'uid': u'5c6cecbc-88be-45a3-8bc0-fcd1fd4f528f', u'url': u'https://10.120.1.111:443/web_api', u'session-timeout': 600, u'sid': u'Sn1q3_6aiLnRnRx_sdX-PiMIXZH1sNyJr98LzIWfaEY', u'api-server-version': u'1.1'}
 Connection to mgmt is okay..
- Tag already exists: GroupA
- Tag already exists: TAG1
- Tag already exists: TAG2
- Tag already exists: GroupB
-Group already exists:GroupA
-Group already exists:GroupB
-Network already exists:net_10.10.0.0_16
-Network already exists:net_10.20.210.0_24
-Network already exists:net_10.30.23.0_24
-Network already exists:net_10.40.22.0_24
-Network already exists:net_10.50.20.0_24
-Configuring NAT for: net_10.10.0.0_16
-Configuring NAT for: net_10.20.210.0_24
-Configuring NAT for: net_10.30.23.0_24
-Adding network: net_10.10.0.0_16 into group:GroupA
-Adding network: net_10.20.210.0_24 into group:GroupA
-Adding network: net_10.30.23.0_24 into group:GroupB
-Adding network: net_10.40.22.0_24 into group:GroupA
-Adding network: net_10.50.20.0_24 into group:GroupB
 Host already exists:test_masina01
 Host already exists:aaa
-{u'tasks': [{u'task-id': u'01234567-89ab-cdef-830f-7594a343886d', u'status': u'succeeded', u'progress-percentage': 100, u'task-name': u'Publish operation', u'task-details': [{u'revision': u'94ec4af4-ea29-4013-9363-1c71dd23ed87', u'publishResponse': {u'numberOfPublishedChanges': 0}}], u'suppressed': False}]}
-{u'message': u'OK'}
-2018-08-20 14:57:18 - script finished!
+Publish OK
+Logout OK
+2018-08-20 15:08:24 - script finished!
