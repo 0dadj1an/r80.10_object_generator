@@ -1,5 +1,5 @@
-2018-08-20 14:40:23 - starting script......
-{u'last-login-was-at': {u'posix': 1534768655030L, u'iso-8601': u'2018-08-20T14:37+0200'}, u'uid': u'3c75e164-3d37-42b3-b5a1-6a1fc9168765', u'url': u'https://10.120.1.111:443/web_api', u'session-timeout': 600, u'sid': u'JfzO81UBO26XV9gk9x92y22-aLyjmkwc_hXH3_TAOW0', u'api-server-version': u'1.1'}
+2018-08-20 14:57:05 - starting script......
+{u'last-login-was-at': {u'posix': 1534769776823L, u'iso-8601': u'2018-08-20T14:56+0200'}, u'uid': u'94ec4af4-ea29-4013-9363-1c71dd23ed87', u'url': u'https://10.120.1.111:443/web_api', u'session-timeout': 600, u'sid': u'yNJs4LHxd2kLfqTYJZzb8YAJwvH8k9FjSXUMbTo6b2A', u'api-server-version': u'1.1'}
 Connection to mgmt is okay..
  Tag already exists: GroupA
  Tag already exists: TAG1
@@ -21,8 +21,7 @@ Adding network: net_10.30.23.0_24 into group:GroupB
 Adding network: net_10.40.22.0_24 into group:GroupA
 Adding network: net_10.50.20.0_24 into group:GroupB
 Host already exists:test_masina01
-Added host:aaa
- publish status =  60
- publish status =  100 succeeded
+Host already exists:aaa
+{u'tasks': [{u'task-id': u'01234567-89ab-cdef-830f-7594a343886d', u'status': u'succeeded', u'progress-percentage': 100, u'task-name': u'Publish operation', u'task-details': [{u'revision': u'94ec4af4-ea29-4013-9363-1c71dd23ed87', u'publishResponse': {u'numberOfPublishedChanges': 0}}], u'suppressed': False}]}
 {u'message': u'OK'}
-2018-08-20 14:40:41 - script finished!
+2018-08-20 14:57:18 - script finished!

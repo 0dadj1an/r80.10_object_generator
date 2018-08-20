@@ -128,6 +128,8 @@ class Connector(object):
 
     def logout(self):
         # avoid connectovity interruption - thats why try except here
+        done=False
+        while not done:
             try:
                 payload_list={}
                 self.response = requests.post(self.url+"logout", json=payload_list, headers=self.headers, verify=False)
@@ -135,11 +137,15 @@ class Connector(object):
                 return self.response
             except:
                 print "connection to mgmt server broken, trying again from logout method"
+            else:
+                done=True
     
         
 
     def publish(self):
         # avoid connectovity interruption - thats why try except here
+        done=False
+        while not done:
             try:
                 payload_list={}
             
@@ -154,7 +160,7 @@ class Connector(object):
                 show_task_text = json.loads(show_task.text)
                 #print show_task_text
                 
-                #print json.loads(show_task.text)
+                print json.loads(show_task.text)
                 
                 while show_task_text['tasks'][0]['status'] == "in progress":
                     print " publish status = ", show_task_text['tasks'][0]['progress-percentage']
@@ -167,6 +173,8 @@ class Connector(object):
 
             except:
                 print "connection to mgmt server broken, trying again from publish method"
+            else:
+                done=True
             
         
 
@@ -186,7 +194,7 @@ class Connector(object):
 
                 return self.response.status_code
             except:
-                print "connection to mgmt server broken, trying again"
+                print "connection to mgmt server broken, trying again from send_cmd method"
             else:
                 done=True
         
@@ -218,7 +226,7 @@ class Connector(object):
                 else:
                     return False
             except:
-                print "connection to mgmt server broken, trying again"
+                print "connection to mgmt server broken, trying again from check_object method"
             else:
                 done=True
         
@@ -465,7 +473,6 @@ def main():
   
                 except:
                     print '%s - script crashed!!!!!!!' % str(datetime.datetime.now()).split('.')[0]
-                    
                     sys.stdout = old_stdout
     
                
