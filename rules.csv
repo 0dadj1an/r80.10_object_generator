@@ -1,0 +1,10 @@
+name,source,destination,service,action,track,comment,type
+section_1,,,,,,,section_tittle
+rule1,h192.168.1.10|h192.168.1.11,any,http,Accept,Log,created by automation,rule
+rule2,h192.168.1.15,any,https,Accept,Log,created by automation,rule
+section_2,,,,,,,section_tittle
+rule3,any,h192.168.1.16,icmp-proto,Accept,Log,created by automation,rule
+rule4,h192.168.1.17,h192.168.1.18|h192.168.1.19,icmp-proto,Accept,Log,created by automation,rule
+section_3,,,,,,,section_tittle
+rule5,h192.168.1.10,h192.168.1.18,icmp-proto|http,Accept,Log,created by automation,rule
+rule6,h192.168.1.12,h192.168.1.18,icmp-proto|https,Accept,Log,created by automation,rule

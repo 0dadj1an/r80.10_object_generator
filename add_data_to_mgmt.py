@@ -15,6 +15,7 @@ import requests
 import ConfigParser
 import sys
 import argparse
+import urllib3
 
  
 
@@ -51,6 +52,8 @@ class Connector(object):
     """
     Connector class handling connectivity via API to mgmt server
     """
+
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     @classmethod
     def task(cls,sid,url,task):
