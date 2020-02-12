@@ -1,15 +1,7 @@
-<<<<<<< HEAD
-certifi==2018.4.16
-chardet==3.0.4
-idna==2.7
-requests==2.19.1
-urllib3==1.23
 
-=======
-certifi==2018.4.16
-chardet==3.0.4
-idna==2.7
-requests==2.20.0
-urllib3==1.23
+certifi
+chardet
+idna
+requests
+urllib3
 
->>>>>>> 9dd14fe62592e62e973926b1f1a3e2f5af060dc3
