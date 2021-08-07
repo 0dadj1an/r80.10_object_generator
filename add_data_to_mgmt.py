@@ -4,7 +4,7 @@
 This code is for Check Point R80.10 API. it loads data from csv and adding those to mgmt server
 @author: ivohrbacek@gmail.com / ivo.hrbacek@ixperta.com
 """
-
+import getpass
 import urllib3
 import csv
 import pprint
@@ -90,7 +90,7 @@ class Connector(object):
              config.read(default_cpi_os_path) #read from cp.ini file
              self.url=config.get('config','url')
              self.user=config.get('config','user')
-             self.passowrd=config.get('config','password')
+             self.passowrd=getpass.getpass()
 
              payload_list={}
              payload_list['user']=self.user
@@ -239,13 +239,15 @@ class Connector(object):
 class Push_Data(object):
 
 
-    def __init__(self, group_list, net_list, nat_list, net_to_group_list, host_list, connect):
+    def __init__(self, host_to_group_list, group_list, net_list, nat_list, net_to_group_list, host_list, connect):
         self.group_list = group_list
         self.net_list = net_list
         self.connect = connect
         self.nat_list = nat_list
         self.net_to_group_list = net_to_group_list
+        self.host_to_group_list = host_to_group_list
         self.host_list = host_list
+
 
 
     def add_tag(self):
@@ -292,9 +294,6 @@ class Push_Data(object):
 
     def add_network(self):
 
-        """
-        Method which adding networks
-        """
 
         for item in self.net_list: # go throug data from csv
             payload = {} # common payload
@@ -318,10 +317,6 @@ class Push_Data(object):
 
     def set_group_for_net(self):
 
-        """
-        Method which adding net to group
-        """
-
         for item in self.net_to_group_list: # go throug data from csv
             print (item)
             payload ={} # common payload
@@ -339,42 +334,67 @@ class Push_Data(object):
                 self.connect.send_cmd('set-network', payload) # modify network settings with NAT config
 
 
+    def set_group_for_host(self):
 
+        """
+        Method which adding net to group
+        """
+        init_counter=0
+        end_counter=1000
+        for item in self.host_to_group_list: # go throug data from csv
+            print (item)
+            payload ={} # common payload
+            group_payload = {} # help payload for nat-settings
+            payload ['name'] = item ['name'] # assing name to be able check if object exists
+
+            if item ['group'] == None: # if nat-settings is true and should be configured, remove name and create nat-settings payload
+                continue
+            else:
+                group_payload['add'] = item ['group']
+
+            if self.connect.check_object('show-host', payload) == True: # check if network object exists
+                payload['groups'] = group_payload # add nat_payload to common payload for request
+                print("Adding host: " + item['name'] + " " + "into group:" + item ['group'])
+                self.connect.send_cmd('set-host', payload) # modify network settings with NAT config
+                init_counter +=1
+                print (init_counter)
+                if init_counter==end_counter:
+                   self.connect.publish()
+                   end_counter+=1000
+                   print ("End counter changed")
+
+        self.connect.publish()
 
     def set_auto_nat_for_net(self):
 
-        """
-        Method which setting up NAT settings for particualr networks
-        """
 
-        for item in self.nat_list: # go throug data from csv
-            payload ={} # common payload
-            nat_payload = {} # help payload for nat-settings
-            payload ['name'] = item ['name'] # assing name to be able check if object exists
+        for item in self.nat_list: 
+            payload ={} 
+            nat_payload = {} 
+            payload ['name'] = item ['name'] 
 
-            if item ['nat-settings'] == 'true': # if nat-settings is true and should be configured, remove name and create nat-settings payload
-                r = dict(item) # create tem object
-                del r['name'] # remove name item
-                del r['nat-settings'] # remove nat-settings parameter which inform NAT should be handled - this is not NAT payload- just boolen
-                if item['hide-behind'] == '': # if there is hide method
-                    del r ['hide-behind'] # remove hide behind item
-                nat_payload = r # create nat_payload
+            if item ['nat-settings'] == 'true': 
+                del r['name'] 
+                del r['nat-settings'] 
+                if item['hide-behind'] == '': 
+                    del r ['hide-behind'] 
+                nat_payload = r
             else:
                 break
-            if self.connect.check_object('show-network', payload) == True: # check if network object exists
-                payload['nat-settings'] = nat_payload # add nat_payload to common payload for request
+            if self.connect.check_object('show-network', payload) == True:
+                payload['nat-settings'] = nat_payload 
                 print("Configuring NAT for: " + item['name'])
-                self.connect.send_cmd('set-network', payload) # modify network settings with NAT config
+                self.connect.send_cmd('set-network', payload) 
 
 
     def add_host(self):
 
-        """
-        Method which setting up NAT settings for particualr networks
-        """
+     
+        init_counter=0
+        end_counter=1000
         for item in self.host_list:
-            payload = {} # common payload
-            payload ['name'] = item['name'] # add name to common payload to check if object exists
+            payload = {}
+            payload ['name'] = item['name'] 
             if self.connect.check_object('show-host', payload) == True:
 
                 print("Host already exists:" + item['name'])
@@ -382,10 +402,17 @@ class Push_Data(object):
             else:
                 payload ['ip-address'] = item['ip-address']
                 payload ['comments'] = item['comments']
-                payload ['tags'] = item['tag']
-                # pokud objek neexistuje pridej ho
+                payload ['ignore-warnings'] ='true'
                 self.connect.send_cmd('add-host', payload)
                 print("Added host:" + item['name'])
+                init_counter +=1
+                print (init_counter)
+                if init_counter==end_counter:
+                   self.connect.publish()
+                   end_counter+=1000
+                   print ("End counter changed")
+
+        self.connect.publish()
 
 
 
@@ -396,58 +423,56 @@ class Push_Data(object):
 # main method
 def main():
 
-    """
-    Main method where all data and instances are loaded and data are pushed to mgmt via API
-    """
-
-    # hangle log file
+ 
     try:
-        os.remove('log.elg') # remove old log file
-        logpath = 'log.elg' # create log file
+        os.remove('log.elg') 
+        logpath = 'log.elg' 
     except:
         print("log file doe not exists, creating one..")
-        logpath = 'log.elg' # create log file
+        logpath = 'log.elg'
 
 
-    # load parameters from user
+    
     argParser = argparse.ArgumentParser(description='CP Mgmt data load script, in parameter -m specify which metod you want to load --> for example -m add_tags, if you want to load all data, specify parameter -m ALL')
-    argParser.add_argument("-m", dest="method", help=('add_tags, add_group, add_network, set_auto_nat_for_net, set_group_for_net,add_hosts, ALL'), required=True)
+    argParser.add_argument("-m", dest="method", help=('add_tags, add_group, add_network, set_auto_nat_for_net, set_group_for_net, set_group_for_host, add_hosts, ALL'), required=True)
     args = argParser.parse_args()
     print("running method:" + " " + args.method)
 
-    # log and run
-    old_stdout = sys.stdout # out to log file
-    with open(logpath,"a") as log_file: # open log file for write
+    
+    old_stdout = sys.stdout 
+    with open(logpath,"a") as log_file: 
                 sys.stdout = log_file
                 print('%s - starting script......' % str(datetime.datetime.now()).split('.')[0])
 
-                 ## load data
-                group = CSV_Importer_to_List('group_template.csv') # load group csv and convert it to list of dictionaries
-                net= CSV_Importer_to_List('net_template.csv') # load nets csv and convert it to list of dictionaries
-                nat = CSV_Importer_to_List('nat_template.csv') # load nat csv and convert it to list of dictionaries
-                net_to_group = CSV_Importer_to_List('net_to_group.csv') # load nat csv and convert it to list of dictionaries
-                host = CSV_Importer_to_List('host.csv')# load hosts csv and convert it to list of dictionaries
+                
+                group = CSV_Importer_to_List('group_template.csv') 
+                net= CSV_Importer_to_List('net_template.csv') 
+                nat = CSV_Importer_to_List('nat_template.csv')
+                net_to_group = CSV_Importer_to_List('net_to_group.csv') 
+                host_to_group = CSV_Importer_to_List('host_to_group.csv')
+                host = CSV_Importer_to_List('host.csv')
 
                 print ("here OK, csv data")
-                # connect to mgmt
+                
                 try:
-                    connect = Connector() # create instance of Connector to mgmt to be able to work via API
+                    connect = Connector() 
                     print ("here OK, connector")
-                    push_data = Push_Data(group.get_csv_list(), net.get_csv_list(),nat.get_csv_list(), net_to_group.get_csv_list(),host.get_csv_list(), connect) # create instance for data pushing - forward lists with data and instance of connector
+                    push_data = Push_Data(host_to_group.get_csv_list(), group.get_csv_list(), net.get_csv_list(),nat.get_csv_list(), net_to_group.get_csv_list(),host.get_csv_list(), connect) # create instance for data pushing - forward lists with data and instance of connector
 
-                # decide what to push according to user parameter
+                
                     if args.method == "ALL":
-                        push_data.add_tag() # push tags
-                        push_data.add_group() #push groups
-                        push_data.add_network() #push networks
-                        push_data.set_auto_nat_for_net() # set NAT
-                        push_data.set_group_for_net() # set nets to group
-                        push_data.add_host()# add hosts
+                        push_data.add_tag() 
+                        push_data.add_group() 
+                        push_data.add_network() 
+                        push_data.set_auto_nat_for_net()
+                        push_data.set_group_for_net() 
+                        push_data.add_host()
+                        push_data.set_group_for_host()
 
 
                     elif args.method == "add_tags":
                         print("Running tags")
-                        push_data.add_tag() # push tags
+                        push_data.add_tag() 
                     elif args.method == "add_group":
                         push_data.add_group() #push groups
                     elif args.method == "add_network":
@@ -456,13 +481,15 @@ def main():
                         push_data.set_auto_nat_for_net() #push groups
                     elif args.method == "set_group_for_net":
                         push_data.set_group_for_net() # set nets to group
+                    elif args.method == "set_group_for_host":
+                        push_data.set_group_for_host() # set nets to group
                     elif args.method == "add_hosts":
                         push_data.add_host() # set nets to group
 
 
                     else:
                         print("Nothing was added, have you specified right method???")
-                        connect.publish() # publish changes
+                        #connect.publish() # publish changes
                         connect.logout() # logout
                         sys.exit(1)
 
@@ -478,12 +505,9 @@ def main():
                     sys.stdout = old_stdout
 
 
-    # print file to terminal
-    with open("log.elg", "r") as f:
-        shutil.copyfileobj(f, sys.stdout)
+    print ("Done")
 
 
 
-# if script is loaded, start with main method
 if __name__ == "__main__":
     main()
