@@ -39,14 +39,13 @@ class CSV_Importer_to_List(object):
             for line in self.reader:
                 self.dic_list.append(line)
 
-        except IOError:
-            DoLogging().do_logging('CSV_Importer_to_List()__init__ - one csv file you specified does not exists')
+        except Exception as e:
+            DoLogging().do_logging('CSV_Importer_to_List()__init__ - csv impoit fail: {}'.format(e))
             sys.exit(1)
 
 
 
     def get_csv_list(self):
-
         return self.dic_list
 
 
@@ -241,7 +240,7 @@ class Connector():
 
 
 
-    def __init__(self, url:str, payload:dict):
+    def __init__(self):
 
         """
         This is constructor for class, login to API server is handled here - handling also conectivity problems to API
@@ -257,11 +256,29 @@ class Connector():
              }
         # headers for usage in instance methods - with self.SID - will be filled up in constructor
         self.headers = {}
-        self.url=url
-        self.payload_list = payload # default only username and passowrd
+        
+        config = configparser.ConfigParser() # config parser instance
+        default_cpi_os_path = 'cp.ini' # config file
+
+        try:
+            config.read(default_cpi_os_path) #read from cp.ini file
+            self.url=config.get('config','url')
+            self.user=config.get('config','user')
+            self.passowrd=getpass.getpass()
+
+            self.payload_list={}
+            self.payload_list['user']=self.user
+            self.payload_list['password']=self.passowrd
+            
+        
+
+        except Exception as e:
+            print("there is no cp.ini file or config section is missing: {}".format(e))
+            sys.exit(1)
+            
+        
         done=False
         counter=0
-        
         # loop to handle connection interuption
         while not done:
             counter +=1
@@ -528,7 +545,7 @@ class Connector():
                     done=True
                     
     
-    def check_object(self, cmd, payload ):
+    def check_object(self, cmd, payload):
         done=False
         counter=0
         while not done:
@@ -602,12 +619,11 @@ class Push_Data(object):
 
 
     def add_group(self):
-        
-
+              
         for item in self.group_list:
             payload = {}
             if item['name'] != '':
-                payload ['name'] = item['name']
+                payload['name'] = item['name']
                 if self.connect.check_object('show-group', payload) == True:
                     print("Group already exists:" + item['name'])
                     continue
@@ -619,18 +635,17 @@ class Push_Data(object):
                             payload_tag ={}
                             payload_tag['name']= item['tag']
                             if self.connect.check_object('show-tag', payload_tag) == True:   
-                                print(" Tag already exists:" + " " + item)
-                                continue
+                                print(" Tag already exists:" + " " + item['tag'])
                             else:
                                 self.connect.send_cmd('add-tag', payload_tag)
-                                print("Added tag for group:" + item)
-                            
+                                print("Added tag for group:" + item['tag'])
+                                
                             payload ['tags'] = item['tag']
                             self.connect.send_cmd('set-group', payload)
-                            print("Added group:" + item['name'])
-                            
+                            print("Added group:" + item['name'])          
             else:
-                 DoLogging().do_logging('Push_Data_add_group() - name for item:{} is missing'.format(item))
+                DoLogging().do_logging('Push_Data_add_group() - name for item:{} is missing'.format(item))
+        
                 
                 
 
@@ -891,55 +906,69 @@ def main():
     host_to_group = CSV_Importer_to_List('host_to_group.csv')
     host = CSV_Importer_to_List('host.csv')
 
-
     try:
         connect = Connector()
-        print ("here OK, connector")
-        push_data = Push_Data(host_to_group.get_csv_list(), group.get_csv_list(), net.get_csv_list(),nat.get_csv_list(), net_to_group.get_csv_list(),host.get_csv_list(), connect) # create instance for data pushing - forward lists with data and instance of connector
+        try:
+            push_data = Push_Data(host_to_group.get_csv_list(), group.get_csv_list(), net.get_csv_list(),nat.get_csv_list(), net_to_group.get_csv_list(),host.get_csv_list(), connect) # create instance for data pushing - forward lists with data and instance of connector
 
-        if args.method == "ALL":
-            push_data.add_tag()
-            push_data.add_group()
-            push_data.add_network()
-            push_data.set_auto_nat_for_net()
-            push_data.set_group_for_net()
-            push_data.add_host()
-            push_data.set_group_for_host()
+            if args.method == "ALL":
+                push_data.add_tag()
+                push_data.add_group()
+                push_data.add_network()
+                push_data.set_auto_nat_for_net()
+                push_data.set_group_for_net()
+                push_data.add_host()
+                push_data.set_group_for_host()
 
-        elif args.method == "add_tags":
-            push_data.add_tag()
-        elif args.method == "add_group":
-            push_data.add_group() 
-        elif args.method == "add_network":
-            push_data.add_network() 
-        elif args.method == "set_auto_nat_for_net":
-            push_data.set_auto_nat_for_net() 
-        elif args.method == "set_group_for_net":
-            push_data.set_group_for_net()
-        elif args.method == "set_group_for_host":
-            push_data.set_group_for_host() 
-        elif args.method == "add_hosts":
-            push_data.add_host() 
+            elif args.method == "add_tags":
+                push_data.add_tag()
+            elif args.method == "add_group":
+                push_data.add_group() 
+            elif args.method == "add_network":
+                push_data.add_network() 
+            elif args.method == "set_auto_nat_for_net":
+                push_data.set_auto_nat_for_net() 
+            elif args.method == "set_group_for_net":
+                push_data.set_group_for_net()
+            elif args.method == "set_group_for_host":
+                push_data.set_group_for_host() 
+            elif args.method == "add_hosts":
+                push_data.add_host() 
 
-        else:
-            connect.logout() 
+            else:
+                connect.logout() 
+                sys.exit(1)
+
+            connect.logout() # logout
+            
+        except KeyboardInterrupt:
+            DoLogging().do_logging("\n main() - ctrl+c pressed, logout and exit..")
+            connect.logout()
             sys.exit(1)
 
-
-
-        connect.publish() # publish changes
-        connect.logout() # logout
-    
-
-
+        except Exception as e:
+            print (e)
+            connect.discard()
+            connect.logout()
+                
+    except KeyboardInterrupt:
+        DoLogging().do_logging("\n main() - ctrl+c pressed, logout and exit..")
+        print ("can not connect, leaving")
+        sys.exit(1)
     except Exception as e:
-        connect.discard()
-        connect.logout()
+        print ("can not connect, leaving")
+        
+    
+    
+   
         
 
 
 
 if __name__ == "__main__":
+   
+   main()
+    
 
-    main()
+
 

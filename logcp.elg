@@ -1,0 +1,14 @@
+INFO:root:TIME:2021-08-18 20:49:22.660911:Connector()__init__ - API login data: {
+  "uid" : "e56ddd0a-d1f0-45ab-b9c7-c3c57b735416",
+  "sid" : "erlbVqI_WesUowcewKRxFJ9HlKZTqqKtgLtKsaxpljE",
+  "url" : "https://172.16.0.40:443/web_api",
+  "session-timeout" : 600,
+  "last-login-was-at" : {
+    "posix" : 1629312426217,
+    "iso-8601" : "2021-08-18T20:47+0200"
+  },
+  "api-server-version" : "1.7"
+}
+INFO:root:TIME:2021-08-18 20:49:22.661598:Connector()__init__ - Connection to API is okay
+INFO:root:TIME:2021-08-18 20:49:22.661838:200
+INFO:root:TIME:2021-08-18 20:49:23.158368:Connector()__logout() - logout from gw is okay
