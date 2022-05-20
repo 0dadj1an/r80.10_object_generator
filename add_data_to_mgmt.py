@@ -664,7 +664,7 @@ class Push_Data(object):
                 payload ['subnet'] = item['subnet4']
                 payload ['mask-length'] = item['mask-length4']
                 payload ['comments'] = item['comments']
-                payload ['ignore-warnings'] ='true'
+                payload ['ignore-warnings'] ='false'
                 #payload ['tags'] = item['tag']
                 print (payload)
                 # pokud objek neexistuje pridej ho
@@ -821,9 +821,6 @@ class Push_Data(object):
 
 
     def add_host(self):
-
-
-
 
 
         init_counter=0

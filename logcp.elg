@@ -1,14 +1,21 @@
-INFO:root:TIME:2021-08-18 20:49:22.660911:Connector()__init__ - API login data: {
-  "uid" : "e56ddd0a-d1f0-45ab-b9c7-c3c57b735416",
-  "sid" : "erlbVqI_WesUowcewKRxFJ9HlKZTqqKtgLtKsaxpljE",
+INFO:root:TIME:2022-05-13 23:43:12.104887:Connector()__init__ - API login data: {
+  "uid" : "101cb8f4-1ec4-48c0-9094-777ff939d668",
+  "sid" : "iaV6saefjp1tMPx2K8PyqJa7V86MfldkmgA8KgGVP5Q",
   "url" : "https://172.16.0.40:443/web_api",
   "session-timeout" : 600,
   "last-login-was-at" : {
-    "posix" : 1629312426217,
-    "iso-8601" : "2021-08-18T20:47+0200"
+    "posix" : 1652478158547,
+    "iso-8601" : "2022-05-13T23:42+0200"
   },
-  "api-server-version" : "1.7"
+  "api-server-version" : "1.8",
+  "user-name" : "admin",
+  "user-uid" : "c05d154c-da47-4d6d-b95d-12b1af67ca2f"
 }
-INFO:root:TIME:2021-08-18 20:49:22.661598:Connector()__init__ - Connection to API is okay
-INFO:root:TIME:2021-08-18 20:49:22.661838:200
-INFO:root:TIME:2021-08-18 20:49:23.158368:Connector()__logout() - logout from gw is okay
+INFO:root:TIME:2022-05-13 23:43:12.105115:Connector()__init__ - Connection to API is okay
+INFO:root:TIME:2022-05-13 23:43:12.105191:200
+INFO:root:TIME:2022-05-13 23:43:12.572360:Connector()__send_cmd() - printing API data for send_cmd() issue: {'code': 'generic_err_invalid_parameter', 'message': 'Parameter [mask-length] value is not valid'}
+INFO:root:TIME:2022-05-13 23:43:13.018504:Connector()__send_cmd() - printing API data for send_cmd() issue: {'code': 'generic_err_invalid_parameter', 'message': 'Parameter [mask-length] value is not valid'}
+INFO:root:TIME:2022-05-13 23:43:13.479392:Connector()__send_cmd() - printing API data for send_cmd() issue: {'code': 'generic_err_invalid_parameter', 'message': 'Parameter [mask-length] value is not valid'}
+INFO:root:TIME:2022-05-13 23:43:13.912092:Connector()__send_cmd() - printing API data for send_cmd() issue: {'code': 'generic_err_invalid_parameter', 'message': 'Parameter [mask-length] value is not valid'}
+INFO:root:TIME:2022-05-13 23:43:14.385300:Connector()__send_cmd() - printing API data for send_cmd() issue: {'code': 'generic_err_invalid_parameter', 'message': 'Parameter [mask-length] value is not valid'}
+INFO:root:TIME:2022-05-13 23:43:14.739434:Connector()__logout() - logout from gw is okay
